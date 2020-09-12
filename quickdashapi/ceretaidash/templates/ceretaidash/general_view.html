@@ -1,0 +1,30 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'ceretaidash/css/main.css' %}">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
+<body>
+    <header>
+        <img class="logo" src="{% static 'ceretaidash/img/highres_ceretai_logo.png' %}">
+        <div class="navbar">
+            <div class="results">Diversity results</div>
+            <div>|</div>
+            <div>Account:{{ entry.user_id }}</div>
+            <div>Log out</div>
+        </div>
+    </header>
+    {% for entry in entry_list %}
+        <div>{{ entry.video_id }}</div>
+        <div>{{ entry.title }}</div>
+        <div>{{ entry.external_id }}</div>
+        <div>{{ entry.user_id }}</div>
+        <div>{{ entry.entry_date }}</div>
+        <div>{{ entry.project }}</div>
+    {% endfor %}
+</body>
+</html>

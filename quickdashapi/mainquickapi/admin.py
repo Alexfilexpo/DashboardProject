@@ -1,6 +1,5 @@
-from .models import User, Entries
+from .models import User, Entries, Source
 from django.contrib import admin
 
 
-admin.site.register(User)
-admin.site.register(Entries)
+admin.site.register([User, Entries, Source])
