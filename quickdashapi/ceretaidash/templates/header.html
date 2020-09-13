@@ -1,0 +1,10 @@
+{% load static %}
+<img class="logo" src="{% static 'ceretaidash/img/highres_ceretai_logo.png' %}">
+<div class="navbar">
+    <div class="results-header">Diversity results</div>
+    <div>|</div>
+    {% if user.is_authenticated %}
+        <div class="account-header">Account: {{ user.username }}</div>
+        <div class="logout"><a href="{% url 'ceretaidash:logout' %}">Log Out</a></div>
+    {% endif %}
+</div>

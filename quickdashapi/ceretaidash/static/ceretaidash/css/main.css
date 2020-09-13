@@ -10,7 +10,46 @@ header {
 img.logo {
     width:200px;
 }
+
+div.login-logo-wrapper {
+    width: 350px;
+    margin: 150px auto;
+    margin-bottom: 0;
+}
+
+img.login-logo {
+    width:300px;
+}
+
+div.results-header, div.account-header {
+    margin-right: 50px;
+    margin-left: 50px;
+}
+
 div.navbar {
     float: right;
     margin-top: 5px;
+}
+
+#login-form {
+    margin: 50px auto;
+    width: 400px;
+}
+
+input.btn-primary {
+    width: 100%;
+}
+
+div.last-results {
+    background-color: #fff;
+    padding: 15px;
+}
+
+div.welcome-title {
+    margin: 50px 0 50px 10px;
+}
+
+h4.result-title {
+    font-family: Arial, Helvetica, sans-serif;
+    color: #b3b3b3;
 }

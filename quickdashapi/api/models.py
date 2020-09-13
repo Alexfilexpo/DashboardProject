@@ -1,3 +1,4 @@
+from django.contrib.auth.models import AbstractUser
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
@@ -8,11 +9,10 @@ CONTRACT_CHOICES = (
 )
 
 
-class User(models.Model):
+class User(AbstractUser):
     user_id = models.AutoField(primary_key=True)
-    entry_date = models.DateField(auto_now_add=True)
+    entry_date = models.DateField()
     description = models.CharField(max_length=255)
-    password = models.CharField(max_length=50)
     total_quota = models.PositiveIntegerField(default=0)
     total_hours_analysed = models.PositiveIntegerField(default=0)
     ceretai_user = models.BooleanField(default=False)
@@ -22,7 +22,7 @@ class User(models.Model):
     name = models.CharField(max_length=255)
 
     def __str__(self):
-        return self.name
+        return self.username
 
 
 class Entries(models.Model):
