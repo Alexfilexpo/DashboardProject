@@ -10,11 +10,17 @@
 {% endif %}
 <div class="last-results">
   <h4 class="result-title">{{ 'yesterday\'s diversity overview'|upper }}</h4>
-  <span><b>Ammount of programmes:</b> 8</span>
-  <span><b>Total length:</b> 44m 57s</span>
+  <span><b>Ammount of programmes:</b> {{ programms_amount }}</span>
+  <span><b>Total length:</b> {{ total_length }}</span>
   <div class="row charts-imgs text-center">
-    <div class="screen-presence col-lg-6"><img class="screen-img" src="data:image/png;base64,{{ chart_uri }}" width="500px"></div>
-    <div class="speaking-time col-lg-6"><img class="speaking-img" src="data:image/png;base64,{{ chart_uri }}" width="500px"></div>
+    <div class="screen-presence col-lg-6">
+      <h4>Screen presence</h4>
+      <img class="screen-img" src="data:image/png;base64,{{ screen_chart }}" width="500px">
+    </div>
+    <div class="speaking-time col-lg-6">
+      <h4>Speaking time</h4>
+      <img class="speaking-img" src="data:image/png;base64,{{ speech_chart }}" width="500px">
+    </div>
   </div>
 </div>
 {% endblock %}

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Entries, User
+from .models import Entries, User, SpeechTimeline, Face
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -13,6 +13,12 @@ class UserSerializer(serializers.ModelSerializer):
         return User.objects.create(**validated_data)
 
 
+class SpeechTimeLineSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SpeechTimeline
+        fields = ['video_id', 'total_length', 'total_speech', 'speech_f', 'speech_m', 'timeline']
+
+
 class EntriesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Entries
@@ -20,3 +26,10 @@ class EntriesSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         return Entries.objects.create(**validated_data)
+
+
+class FaceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Face
+        fields = ['video_id', 'screen_f', 'screen_m', 'screen_n', 'main_f', 'main_m', 'center_f', 'center_m',
+                  'confidence_f', 'confidence_m']

@@ -53,3 +53,7 @@ h4.result-title {
     font-family: Arial, Helvetica, sans-serif;
     color: #b3b3b3;
 }
+
+div.row {
+    margin-top: 20px;
+}

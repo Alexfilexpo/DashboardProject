@@ -1,9 +1,11 @@
+from datetime import date, timedelta
+
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Entries, User
-from .serializers import EntriesSerializer, UserSerializer
+from .models import Entries, User, SpeechTimeline
+from .serializers import EntriesSerializer, UserSerializer, SpeechTimeLineSerializer, FaceSerializer
 
 
 class UserView(APIView):
@@ -76,3 +78,25 @@ class EntryDetailView(APIView):
         entry.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+
+class LastEntryDetailView(APIView):
+    def get(self, request, user):
+        counter = 1
+        response = {}
+        entries = Entries.objects.filter(user_id=user, entry_date=date.strftime(date.today()-timedelta(days=1), '%Y-%m-%d'))
+        for entry in entries:
+            speech_time = entry.speechtimeline_set.get()
+            face_data = entry.face_set.get()
+            context = {
+                "request": request,
+            }
+            entry_serializer = EntriesSerializer(entry, context=context)
+            speech_time_serializer = SpeechTimeLineSerializer(speech_time, context=context)
+            face_serializer = FaceSerializer(face_data, context=context)
+            response['video_' + str(counter)] = {
+                'entry': entry_serializer.data,
+                'speech_time': speech_time_serializer.data,
+                'face_data': face_serializer.data,
+            }
+            counter += 1
+        return Response(response)

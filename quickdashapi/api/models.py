@@ -30,7 +30,7 @@ class Entries(models.Model):
     title = models.CharField(max_length=255)
     external_id = models.PositiveIntegerField(unique=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    entry_date = models.DateField(auto_now_add=True)
+    entry_date = models.DateField()
     project = models.CharField(max_length=255)
 
     def __str__(self):
@@ -66,7 +66,10 @@ class SpeechTimeline(models.Model):
     total_speech = models.PositiveIntegerField()
     speech_f = models.PositiveIntegerField()
     speech_m = models.PositiveIntegerField()
-    timeline = models.CharField(max_length=255)
+    timeline = models.TextField()
+
+    def __str__(self):
+        return str(self.video_id)
 
 
 class ScreenTimeline(models.Model):
