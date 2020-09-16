@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block title %}Diversity results{% endblock %}
+
+{% block content %}
+    <div class="main-detail-table">
+        <h3 class="detail-title">Diversity results</h3>
+        <div class="period-status">Showing results for period {{ entry_date }}</div>
+        <div class="row period-filter">
+            <form class="filter-picker col" action="{% url 'api:EntriesListEndpoint' %}" method="get">
+                <div class="form-row col">
+                    <div class="form-group col-md-3">
+                        <label for="date-picker">See results from the period of</label>
+                        <input type="text" class="form-control" id="date-picker" placeholder="Date range">
+                    </div>
+                    <div class="form-group col-md-3 offset-md-1">
+                        <label for="title-picker">Filter on title</label>
+                        <input class="form-control" id="title-picker" placeholder="e.g News">
+                    </div>
+                    <button class="filter-button col-md-2 offset-md-2" type="submit" class="btn btn-primary">show results</button>
+                </div>
+            </form>
+        </div>
+        <div class="prog_info row">
+            <span><b>Ammount of programmes:</b> {{ programms_amount }}</span>
+            <span><b>Total length:</b> {{ total_length }}</span>
+        </div>
+        <div class="representation-wrapper">
+            <h4 class="repr-title">Representation</h4>
+        </div>
+        <hr>
+        <div class="detailed-results">
+            <div class="title-wrapper">
+                <p class="detailed-title">Gender</p>
+            </div>
+            <div class="row charts-imgs text-center">
+                <div class="screen-presence col-lg-6">
+                    <h4>Screen presence</h4>
+                    <img class="screen-img" src="data:image/png;base64,{{ screen_chart }}" width="500px">
+                </div>
+                <div class="speaking-time col-lg-6">
+                    <h4>Speaking time</h4>
+                    <img class="speaking-img" src="data:image/png;base64,{{ speech_chart }}" width="500px">
+                </div>
+            </div>
+        </div>
+        <div class="detailed-results">
+            <div class="title-wrapper">
+                <p class="detailed-title">Age</p>
+            </div>
+            <div class="row charts-imgs text-center">
+                <div class="age-distribution col-lg-6">
+                    <h4>Age distribution</h4>
+                    <img class="age-distribution-img" src="data:image/png;base64,{{ bar_chart }}" width="500px">
+                </div>
+                <div class="speaking-time col-lg-6">
+                    <h4>Average age per gender</h4>
+                    <div class="row justify-content-around avg-ages">
+                        <div class="woman-age col-md-3">
+                            <p>Womens are</br>
+                            <span class="avg-f"><b>{{ woman_avg_age }}</b></span></br>
+                            y/o on average</p>
+                        </div>
+                        <div class="man-age col-md-3">
+                            <p>Men are</br>
+                            <span class="avg-m"><b>{{ man_avg_age }}</b></span></br>
+                            y/o on average</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

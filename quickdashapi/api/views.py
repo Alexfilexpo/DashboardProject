@@ -4,8 +4,9 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Entries, User, SpeechTimeline
-from .serializers import EntriesSerializer, UserSerializer, SpeechTimeLineSerializer, FaceSerializer
+from .models import Entries, User
+from .serializers import EntriesSerializer, UserSerializer, SpeechTimeLineSerializer, FaceSerializer, AgeAllSerializer,\
+    AgeFemaleSerializer, AgeMaleSerializer
 
 
 class UserView(APIView):
@@ -79,24 +80,46 @@ class EntryDetailView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class LastEntryDetailView(APIView):
-    def get(self, request, user):
+class SpecificVideoView(APIView):
+    def get(self, request, user, date_range=None, title=None):
         counter = 1
         response = {}
-        entries = Entries.objects.filter(user_id=user, entry_date=date.strftime(date.today()-timedelta(days=1), '%Y-%m-%d'))
+        if not date_range:
+            entry_date = date.strftime(date.today()-timedelta(days=1), '%Y-%m-%d')
+        else:
+            entry_date = date_range.split(' - ') if ' - ' in date_range else date_range
+        if date_range and title:
+            if isinstance(entry_date, str):
+                entries = Entries.objects.filter(user_id=user, entry_date=entry_date, title=title)
+            else:
+                entries = Entries.objects.filter(user_id=user, entry_date__range=entry_date, title=title)
+        elif date_range:
+            if isinstance(entry_date, str):
+                entries = Entries.objects.filter(user_id=user, entry_date=entry_date)
+            else:
+                entries = Entries.objects.filter(user_id=user, entry_date__range=entry_date)
         for entry in entries:
             speech_time = entry.speechtimeline_set.get()
             face_data = entry.face_set.get()
+            age_data = entry.ageall_set.get()
+            female_age_data = entry.agefemale_set.get()
+            male_age_data = entry.agemale_set.get()
             context = {
                 "request": request,
             }
             entry_serializer = EntriesSerializer(entry, context=context)
             speech_time_serializer = SpeechTimeLineSerializer(speech_time, context=context)
             face_serializer = FaceSerializer(face_data, context=context)
+            age_all_serializer = AgeAllSerializer(age_data, context=context)
+            age_female_serializer = AgeFemaleSerializer(female_age_data, context=context)
+            age_male_serializer = AgeMaleSerializer(male_age_data, context=context)
             response['video_' + str(counter)] = {
                 'entry': entry_serializer.data,
                 'speech_time': speech_time_serializer.data,
                 'face_data': face_serializer.data,
+                'age_all_data': age_all_serializer.data,
+                'age_female_data': age_female_serializer.data,
+                'age_male_data': age_male_serializer.data,
             }
             counter += 1
         return Response(response)

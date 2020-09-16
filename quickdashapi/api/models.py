@@ -130,7 +130,7 @@ class AgeFemale(models.Model):
 
 class AgeMale(models.Model):
     video_id = models.ForeignKey(Entries, on_delete=models.CASCADE)
-    avg_age_f = models.FloatField(validators=[MinValueValidator(0.0)], )
+    avg_age_m = models.FloatField(validators=[MinValueValidator(0.0)], )
     avg_age_range = models.FloatField(validators=[MinValueValidator(0.0)], )
     a_0 = models.FloatField(validators=[MinValueValidator(0.0)], )
     a_15 = models.FloatField(validators=[MinValueValidator(0.0)], )

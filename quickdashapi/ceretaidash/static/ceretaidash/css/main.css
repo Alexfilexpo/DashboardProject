@@ -49,11 +49,128 @@ div.welcome-title {
     margin: 50px 0 50px 10px;
 }
 
-h4.result-title {
+h4.result-title, h4.status-title, h4.sub-title, h4.news-title {
     font-family: Arial, Helvetica, sans-serif;
     color: #b3b3b3;
 }
 
 div.row {
     margin-top: 20px;
+}
+
+div.all-results-button-wrapper {
+    background-color: blue;
+    display: flex;
+    justify-content: center;
+    width: 150px;
+    position: relative;
+    top: -25px;
+    margin: 0 auto;
+}
+
+a.detail-results-link {
+    color: white;
+}
+a.detail-results-link:hover {
+    color: white;
+}
+
+div.general-status, div.general-subscription {
+    padding: 15px;
+    background-color: white;
+}
+
+p.sub-left, h4.sub-title {
+    position: relative;
+    top: -30px;
+}
+
+div.sub-info {
+    position: relative;
+    left: 450px;
+    top: -30px;
+    width: 180px;
+    height: 30px;
+    background-color: blue;
+    color: white;
+}
+
+div.news-block {
+    background-color: white;
+    margin-top: 50px;
+    padding: 15px 15px;
+}
+
+div.main-detail-table {
+    padding: 15px;
+    background-color: white;
+}
+
+div.period-status {
+    width: 300px;
+    padding: 5px;
+    background-color: blue;
+    color: white;
+}
+
+div.period-filter {
+    padding: 15px;
+    background-color: #c7cdff;
+}
+
+form.filter-picker {
+    width: 40%;
+}
+
+button.filter-button {
+    height: 50px;
+    top: 25px;
+}
+
+div.prog_info {
+    margin-top: 25px;
+    height: 50px;
+    background-color: #c7cdff;
+    padding: 15px;
+}
+
+div.representation-wrapper {
+    width: 200px;
+    position: relative;
+    background-color: white;
+    top: 30px;
+}
+
+div.detailed-results {
+    margin-top: 50px;
+    padding: 25px;
+    border: 1px #d4d4d4 solid;
+}
+
+div.title-wrapper {
+    background-color: #fff;
+    display: flex;
+    justify-content: center;
+    width: 150px;
+    position: relative;
+    top: -40px;
+    margin: 0 auto;
+}
+
+div.detailed-results > div.charts-imgs {
+    margin-top: -35px;
+}
+
+div.avg-ages {
+    margin-top: 115px;
+}
+
+span.avg-f {
+    color: #2e35ff;
+    font-size: 60px;
+}
+
+span.avg-m {
+    color: black;
+    font-size: 60px;
 }

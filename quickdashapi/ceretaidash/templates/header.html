@@ -4,7 +4,7 @@
     <div class="results-header">Diversity results</div>
     <div>|</div>
     {% if user.is_authenticated %}
-        <div class="account-header">Account: {{ user.username }}</div>
+        <div class="account-header" id="{{ user.user_id }}" >Account: {{ user.username }}</div>
         <div class="logout"><a href="{% url 'ceretaidash:logout' %}">Log Out</a></div>
     {% endif %}
 </div>

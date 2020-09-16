@@ -3,24 +3,49 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-{% if user.is_authenticated %}
-<div class="welcome-title">
-  <h1>Welcome, {{ user.username }}.</h1>
-</div>
-{% endif %}
-<div class="last-results">
-  <h4 class="result-title">{{ 'yesterday\'s diversity overview'|upper }}</h4>
-  <span><b>Ammount of programmes:</b> {{ programms_amount }}</span>
-  <span><b>Total length:</b> {{ total_length }}</span>
-  <div class="row charts-imgs text-center">
-    <div class="screen-presence col-lg-6">
-      <h4>Screen presence</h4>
-      <img class="screen-img" src="data:image/png;base64,{{ screen_chart }}" width="500px">
-    </div>
-    <div class="speaking-time col-lg-6">
-      <h4>Speaking time</h4>
-      <img class="speaking-img" src="data:image/png;base64,{{ speech_chart }}" width="500px">
+  {% if user.is_authenticated %}
+  <div class="welcome-title">
+    <h1>Welcome, {{ user.username }}.</h1>
+  </div>
+  {% endif %}
+  <div class="last-results">
+    <h4 class="result-title">{{ 'yesterday\'s diversity overview'|upper }}</h4>
+    <span><b>Ammount of programmes:</b> {{ programms_amount }}</span>
+    <span><b>Total length:</b> {{ total_length }}</span>
+    <div class="row charts-imgs text-center">
+      <div class="screen-presence col-lg-6">
+        <h4>Screen presence</h4>
+        <img class="screen-img" src="data:image/png;base64,{{ screen_chart }}" width="500px">
+      </div>
+      <div class="speaking-time col-lg-6">
+        <h4>Speaking time</h4>
+        <img class="speaking-img" src="data:image/png;base64,{{ speech_chart }}" width="500px">
+      </div>
     </div>
   </div>
-</div>
+  <div class="all-results-button-wrapper">
+    <button class="btn-primary all-results-button"><a class="detail-results-link" href="{% url 'ceretaidash:results_detail' date=entry_date %}">{{ 'see all results'|upper }}</a></button>
+  </div>
+  <div class="row justify-content-between status-subscripton-block">
+    <div class="general-status col-lg-5">
+      <h4 class="status-title">{{ 'status'|upper }}</h4>
+      <p class="status-info">{{ programms_amount }} programmes went through diversity analysis yesterday.</p>
+    </div>
+    <div class="general-subscription col-lg-5">
+      <div class="sub-info text-center">{{ total_hours }} hours per month</div>
+      <h4 class="sub-title">{{ 'subscription'|upper }}</h4>
+      <p class="sub-left">You have {{ hours_left }} hours left ot analyze this month</p>
+    </div>
+  </div>
+  <div class="col news-block text-left">
+    <h4 class="news-title">{{ 'news'|upper }}</h4>
+    <div class="row col-lg-11">
+      <div class="news-date">7/9/2020</div><div class="new-title offset-lg-2">News one</div>
+    </div>
+    <hr>
+    <div class="row col-lg-11">
+      <div class="news-date">1/9/2020</div><div class="new-title offset-lg-2">News two</div>
+    </div>
+    <hr>
+  </div>
 {% endblock %}
