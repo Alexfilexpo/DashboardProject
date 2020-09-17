@@ -8,12 +8,9 @@ import urllib
 
 import matplotlib.pyplot as plt
 
-from django.http import HttpResponse
-from django.shortcuts import render, redirect
-from django.urls import reverse_lazy, reverse
+from django.shortcuts import render
+from django.urls import reverse_lazy
 from django.views import View
-
-# from api.urls import LastEntryDetailView
 
 
 def create_pie_chart_data(response_data):

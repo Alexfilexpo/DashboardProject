@@ -81,7 +81,10 @@ class EntryDetailView(APIView):
 
 
 class SpecificVideoView(APIView):
-    def get(self, request, user, date_range=None, title=None):
+    """
+    Retrieve specific entry, speech, face, ages data
+    """
+    def get(self, request, user, date_range=None, title=None) -> Response:
         counter = 1
         response = {}
         if not date_range:
