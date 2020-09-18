@@ -1,3 +1,4 @@
+import math
 from datetime import date, timedelta
 
 from rest_framework import status
@@ -9,33 +10,18 @@ from .serializers import EntriesSerializer, UserSerializer, SpeechTimeLineSerial
     AgeFemaleSerializer, AgeMaleSerializer
 
 
-class UserView(APIView):
-    """
-    Retrieve specified user or create new one
-    """
-
-    def get(self, request, pk: int) -> Response:
-        user = User.objects.get(user_id=pk)
-        serializer = UserSerializer(user, many=False)
-        return Response({
-            'user': serializer.data
-        })
-
-    def put(self, request, pk: int) -> Response:
-        user = User.objects.get(user_id=pk)
-        serializer = UserSerializer(user, data=request.data.get('user'))
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
 class EntriesView(APIView):
-    """
-    List all Entries results, or create new one
-    """
+    """List all entries or create new one"""
 
     def get(self, request) -> Response:
+        """Returns all entries in db
+
+        Returns
+        -------
+        Response
+            Response object with all created objects of Entries model
+        """
+
         entries = Entries.objects.all()
         serializer = EntriesSerializer(entries, many=True)
         return Response({
@@ -43,6 +29,14 @@ class EntriesView(APIView):
         })
 
     def post(self, request) -> Response:
+        """Create new entry
+
+        Returns
+        -------
+        Response
+            Response object with created object of Entry model
+        """
+
         entry = request.data.get('entry')
         serializer = EntriesSerializer(data=entry)
         if serializer.is_valid(raise_exception=True):
@@ -51,15 +45,28 @@ class EntriesView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def perform_create(self, serializer):
+        """Serializer method to save data"""
+
         serializer.save(user=self.request.user)
 
 
 class EntryDetailView(APIView):
-    """
-    Retrieve specified entry
-    """
+    """Retrieve specified entry"""
 
     def get(self, request, pk: int) -> Response:
+        """Returns specified entry data
+
+        Parameters
+        ----------
+        pk : int
+            Primary key (or video id) for searching in db
+
+        Returns
+        -------
+        Response
+            Response object with all fields from Entries model
+        """
+
         entry = Entries.objects.get(video_id=pk)
         serializer = EntriesSerializer(entry, many=False)
         return Response({
@@ -67,6 +74,18 @@ class EntryDetailView(APIView):
         })
 
     def put(self, request, pk: int) -> Response:
+        """Updates specified entry data
+
+        Parameters
+        ----------
+        pk : int
+            Primary key (or video id) for searching in db
+
+        Returns
+        -------
+        Response
+            Response object with updated Entry data
+        """
         entry = Entries.objects.get(video_id=pk)
         serializer = EntriesSerializer(entry, data=request.data.get('entry'))
         if serializer.is_valid():
@@ -75,6 +94,18 @@ class EntryDetailView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk: int) -> Response:
+        """Delete specified entry
+
+        Parameters
+        ----------
+        pk : int
+            Primary key (or video id) for searching in db
+
+        Returns
+        -------
+        Response
+            Response object updated Entry object status
+        """
         entry = Entries.objects.get(video_id=pk)
         entry.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
@@ -84,7 +115,26 @@ class SpecificVideoView(APIView):
     """
     Retrieve specific entry, speech, face, ages data
     """
+
     def get(self, request, user, date_range=None, title=None) -> Response:
+        """Returns specified entry data with related models data
+
+        Parameters
+        ----------
+        user : int
+            Primary key (or user id)
+        date_range : str, optional
+            Date range in format "Y-m-d - Y-m-d". Will be splited to "from date" and "end date"
+            (default is None)
+        title : str, optional
+            Video title
+
+        Returns
+        -------
+        Response
+            Response object with all fields from Entries model and some field from related models for detailed info
+        """
+
         counter = 1
         response = {}
         if not date_range:
@@ -126,3 +176,50 @@ class SpecificVideoView(APIView):
             }
             counter += 1
         return Response(response)
+
+
+class UserView(APIView):
+    """
+    Retrieve specified user or create new one
+    """
+
+    def get(self, request, pk: int) -> Response:
+        """Returns specified user data
+
+        Parameters
+        ----------
+        pk : int
+            Primary key (or user id) for searching in db
+
+        Returns
+        -------
+        Response
+            Response object with all fields from User model
+        """
+
+        user = User.objects.get(user_id=pk)
+        serializer = UserSerializer(user, many=False)
+        return Response({
+            'user': serializer.data
+        })
+
+    def put(self, request, pk: int) -> Response:
+        """Updates specified user data
+
+        Parameters
+        ----------
+        pk : int
+            Primary key (or user id) for searching in db
+
+        Returns
+        -------
+        Response
+            Response object with updated fields from User model
+        """
+
+        user = User.objects.get(user_id=pk)
+        serializer = UserSerializer(user, data=request.data.get('user'))
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -306,6 +306,8 @@ class LastProcessedEntry(View):
         api_uri = request.build_absolute_uri(reverse_lazy('api:DateFilteredVideoEndpoint', kwargs={'user': request.user.user_id, 'date_range': yesterday_date}))
         entry_data = requests.get(api_uri)
         response_data = json.loads(entry_data.content)
+        if not response_data:
+            return render(request, self.template_name, {'entry_date': yesterday_date})
         video_id = response_data['video_1']['entry']['video_id']
         entry_date = response_data['video_1']['entry']['entry_date']
 
