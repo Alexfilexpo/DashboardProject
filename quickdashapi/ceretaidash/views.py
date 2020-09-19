@@ -185,6 +185,7 @@ def create_bar_chart_data(response_data):
     dict
         Dictionary created bar chart for age
     """
+
     videos_amount = len(response_data)
     if videos_amount == 1:
         age_labels = []
@@ -274,6 +275,22 @@ def create_bar_chart_data(response_data):
 
 
 def create_pie_chart(labels: list, sizes: list) -> str:
+    """Creating pie chart
+
+    Parameters
+    ----------
+    labels : list
+        List of category names
+
+    sizes : list
+        Percentage numbers for each category
+
+    Returns
+    -------
+    str
+        Decoded chart byte object to string for applying on template
+    """
+
     fig1, ax1 = plt.subplots()  # Creating simple figure
     ax1.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=90)  # Define figure as pie chart
     ax1.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
@@ -282,6 +299,22 @@ def create_pie_chart(labels: list, sizes: list) -> str:
 
 
 def create_bar_chart(labels: list, sizes: list) -> str:
+    """Creating bar chart
+
+    Parameters
+    ----------
+    labels : list
+        List of category names
+
+    sizes : list
+        Percentage numbers for each category
+
+    Returns
+    -------
+    str
+        Decoded chart byte object to string for applying on template
+    """
+
     plt.bar(labels, sizes, color='grey')
     plt.xlabel("age in years")
     plt.ylabel("screen presence in %")
@@ -289,7 +322,20 @@ def create_bar_chart(labels: list, sizes: list) -> str:
     return convert_to_uri(figure=chart)
 
 
-def calc_avg_age(response_data):
+def calc_avg_age(response_data) -> dict:
+    """Calculating average age
+
+    Parameters
+    ----------
+    response_data : dict
+        Data retrieved from api
+
+    Returns
+    -------
+    dict
+        Dictionary with average age for male and female
+    """
+
     videos_amount = len(response_data)
     if videos_amount == 1:
         avg_female_age = response_data['video_1']['age_female_data']['avg_age_f']
@@ -306,7 +352,20 @@ def calc_avg_age(response_data):
     }
 
 
-def convert_to_uri(figure=None):
+def convert_to_uri(figure=None) -> str:
+    """Converting chart bytes object to uri string for applying on template
+
+    Parameters
+    ----------
+    figure : bytes
+        Chart object saved as bytes
+
+    Returns
+    -------
+    str
+        URI string object
+    """
+
     if figure:
         buffer = io.BytesIO()  # Creating buffer
         figure.savefig(buffer, format='png')  # Saving current chart
@@ -317,16 +376,57 @@ def convert_to_uri(figure=None):
 
 
 class LastProcessedEntry(View):
+    """Display last analyzed entry
+
+    Model
+    -----
+    api.Entries
+        api.Entries object
+
+    Filters
+    -------
+    user
+        api.User.user_id - id of current active User object
+    date
+        Datetime object. Default - calculated yesterday date.
+        If Entries.objects are empty - get last processed entry and 'date' filter not using.
+
+    Template
+    -------
+    'ceretaidash/general_view.html'
+
+    Returns data
+    ------------
+    video_id
+        ID of Entries object
+    entry_date
+        Date when Entries object was analyzed
+    last_result
+        Marker that last result was returned
+    total_hours
+        Amount of total hours - according to subscription rate
+    hours_left
+        Amount of hours left - according to subscription rate
+    programms_amount
+        Amount of videos were processed
+    total_length
+        Sum of all time entries length
+    screen_chart
+        'Screen Presence Chart' URI object
+    speech_chart
+        'Speaking Time Chart' URI object
+    """
+
     template_name = 'general_view.html'
 
     def get(self, request):
         last_result = False
-        # Get speech and screen data
         try:
             request.user.user_id
         except:
             return render(request, 'registration/login.html')
 
+        # Get speech and screen data
         yesterday_date = datetime.date.today()-datetime.timedelta(days=1)
         api_uri = request.build_absolute_uri(reverse_lazy('api:FilteredDateVideoEndpoint', kwargs={'user': request.user.user_id, 'date': yesterday_date}))
         entry_data = requests.get(api_uri)
@@ -345,7 +445,7 @@ class LastProcessedEntry(View):
 
         # Creating charts data
         pie_charts = create_pie_chart_data(response_data)
-        plt.clf()
+        plt.clf()  # Clean temp plot storage figure
 
         return render(request, self.template_name, {
             'video_id': video_id,
@@ -361,6 +461,47 @@ class LastProcessedEntry(View):
 
 
 class EntryDetailResults(View):
+    """Detailed result for specified entry
+
+    Model
+    -----
+    api.Entries
+        api.Entries object
+
+    Filters
+    -------
+    user
+        api.User.user_id - id of current active User object
+    date
+        Datetime object. Default - calculated yesterday date.
+        If Entries.objects are empty - get last processed entry and 'date' filter not using.
+
+    Template
+    -------
+    'ceretaidash/detailed_view.html'
+
+    Returns data
+    ------------
+    video_id : int
+        ID of Entries object
+    entry_date : str
+        Date when Entries object was analyzed
+    programms_amount : int
+        Amount of videos were processed
+    total_length : int
+        Sum of all time entries length
+    screen_chart : str
+        'Screen Presence Chart' URI object
+    speech_chart : str
+        'Speaking Time Chart' URI object
+    bar_chart : str
+        'Age Distribution Chart' URI object
+    woman_avg_age : int
+        Average woman age
+    man_avg_age : int
+        Average man age
+    """
+
     template_name = 'detailed_view.html'
 
     def get(self, request, date=None):
@@ -375,7 +516,7 @@ class EntryDetailResults(View):
         # Creating charts data
         bar_chart = create_bar_chart_data(response_data)
         charts = create_pie_chart_data(response_data)
-        plt.clf()
+        plt.clf()  # Clean temp plot storage figure
 
         # Calculating avg age
         age = calc_avg_age(response_data)
@@ -383,8 +524,6 @@ class EntryDetailResults(View):
         return render(request, self.template_name, {
             'video_id': video_id,
             'entry_date': entry_date,
-            'total_hours': request.user.total_quota,
-            'hours_left': request.user.current_quota,
             'programms_amount': len(response_data),
             'total_length': charts['total_length'],
             'screen_chart': charts['screen_chart'],
@@ -394,30 +533,3 @@ class EntryDetailResults(View):
             'man_avg_age': int(age['male_age']),
         })
 
-
-class NewEntryDetailResults(View):
-    template_name = "detailed_view.html"
-
-    def __init__(self):
-        super(NewEntryDetailResults, self).__init__()
-
-    def dispatch(self, request, *args, **kwargs):
-        self.category = kwargs['root_category']
-
-        if self.category == 'accessories':
-            return HttpResponsePermanentRedirect(reverse_lazy('products:accessories'))
-
-        return super(CategoriesView, self).dispatch(request, *args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        context = super(CategoriesView, self).get_context_data(**kwargs)
-
-        if self.category == 'accessories':
-            context['title'] = _('Accessories')
-        else:
-            context['title'] = _('Clothes')
-
-        context['categories'] = ProductCategory.objects.filter(parent__codename=self.category,
-                                                               product__deactivated__isnull=True).distinct()
-
-        return context
