@@ -9,6 +9,9 @@ Test dashboard project with charts and PostgreSQL db in the GCP (GoogleCloudPlat
 - **matplotlib 3.3.1** - Library for creating charts.
 - **requests 2.24.0** - Library for requests handling.
 
+# Flowchart
+![Dash Flowchart](https://github.com/Alexfilexpo/DashboardProject/blob/master/quickdashapi/DashFlowchart.jpg)
+
 # Install 
 
 ```
