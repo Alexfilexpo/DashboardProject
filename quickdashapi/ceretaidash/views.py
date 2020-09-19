@@ -1,7 +1,7 @@
 import base64
 import datetime
-import io
 import json
+import io
 import math
 import requests
 import urllib
@@ -9,11 +9,23 @@ import urllib
 import matplotlib.pyplot as plt
 
 from django.shortcuts import render
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.views import View
 
 
-def create_pie_chart_data(response_data):
+def create_pie_chart_data(response_data) -> dict:
+    """Creating and populating detailed entry data analysis for pie charts
+
+    Parameters
+    ----------
+    response_data : dict
+        Data retrieved from api
+
+    Returns
+    -------
+    dict
+        Dictionary with calculated total video length and created pie charts for speech and screen
+    """
     if len(response_data) == 1:
         total_length = datetime.timedelta(seconds=response_data['video_1']['speech_time']['total_length'])
         if 'speech_time' in response_data['video_1']:
@@ -161,6 +173,18 @@ def create_pie_chart_data(response_data):
 
 
 def create_bar_chart_data(response_data):
+    """Creating and populating detailed entry data analysis for bar chart
+
+    Parameters
+    ----------
+    response_data : dict
+        Data retrieved from api
+
+    Returns
+    -------
+    dict
+        Dictionary created bar chart for age
+    """
     videos_amount = len(response_data)
     if videos_amount == 1:
         age_labels = []
@@ -203,7 +227,6 @@ def create_bar_chart_data(response_data):
         a_90 = 0
         for video in response_data:
             all_age_data = response_data[video]['age_all_data']
-            # print(all_age_data)
             for key, value in all_age_data.items():
                 if key == 'a_0':
                     label_size_age_dict['1-14'] = 0
@@ -297,19 +320,28 @@ class LastProcessedEntry(View):
     template_name = 'general_view.html'
 
     def get(self, request):
+        last_result = False
         # Get speech and screen data
         try:
             request.user.user_id
         except:
             return render(request, 'registration/login.html')
+
         yesterday_date = datetime.date.today()-datetime.timedelta(days=1)
-        api_uri = request.build_absolute_uri(reverse_lazy('api:DateFilteredVideoEndpoint', kwargs={'user': request.user.user_id, 'date_range': yesterday_date}))
+        api_uri = request.build_absolute_uri(reverse_lazy('api:FilteredDateVideoEndpoint', kwargs={'user': request.user.user_id, 'date': yesterday_date}))
         entry_data = requests.get(api_uri)
         response_data = json.loads(entry_data.content)
+
         if not response_data:
-            return render(request, self.template_name, {'entry_date': yesterday_date})
+            api_uri = request.build_absolute_uri(reverse_lazy('api:LastVideoEndpoint', kwargs={'user': request.user.user_id}))
+            params = {'last': True}
+            entry_data = requests.get(api_uri, params=params)
+            response_data = json.loads(entry_data.content)
+
         video_id = response_data['video_1']['entry']['video_id']
         entry_date = response_data['video_1']['entry']['entry_date']
+        if entry_date != str(datetime.date.today()):
+            last_result = True
 
         # Creating charts data
         pie_charts = create_pie_chart_data(response_data)
@@ -318,6 +350,7 @@ class LastProcessedEntry(View):
         return render(request, self.template_name, {
             'video_id': video_id,
             'entry_date': entry_date,
+            'last_result': last_result,
             'total_hours': request.user.total_quota,
             'hours_left': request.user.current_quota,
             'programms_amount': len(response_data),
@@ -330,10 +363,12 @@ class LastProcessedEntry(View):
 class EntryDetailResults(View):
     template_name = 'detailed_view.html'
 
-    def get(self, request, date=None, title=None):
-        api_uri = request.build_absolute_uri(reverse_lazy('api:DateFilteredVideoEndpoint', kwargs={'user': request.user.user_id, 'date_range': date}))
+    def get(self, request, date=None):
+        api_uri = request.build_absolute_uri(reverse('api:FilteredDateVideoEndpoint', kwargs={'user': request.user.user_id, 'date': date}))
         entry_data = requests.get(api_uri)
         response_data = json.loads(entry_data.content)
+        if not response_data:
+            return render(request, self.template_name)
         video_id = response_data['video_1']['entry']['video_id']
         entry_date = response_data['video_1']['entry']['entry_date']
 
@@ -358,3 +393,31 @@ class EntryDetailResults(View):
             'woman_avg_age': int(age['female_age']),
             'man_avg_age': int(age['male_age']),
         })
+
+
+class NewEntryDetailResults(View):
+    template_name = "detailed_view.html"
+
+    def __init__(self):
+        super(NewEntryDetailResults, self).__init__()
+
+    def dispatch(self, request, *args, **kwargs):
+        self.category = kwargs['root_category']
+
+        if self.category == 'accessories':
+            return HttpResponsePermanentRedirect(reverse_lazy('products:accessories'))
+
+        return super(CategoriesView, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(CategoriesView, self).get_context_data(**kwargs)
+
+        if self.category == 'accessories':
+            context['title'] = _('Accessories')
+        else:
+            context['title'] = _('Clothes')
+
+        context['categories'] = ProductCategory.objects.filter(parent__codename=self.category,
+                                                               product__deactivated__isnull=True).distinct()
+
+        return context

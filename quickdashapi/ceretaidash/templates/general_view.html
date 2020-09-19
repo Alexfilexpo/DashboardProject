@@ -9,7 +9,11 @@
   </div>
   {% endif %}
   <div class="last-results">
-    <h4 class="result-title">{{ 'yesterday\'s diversity overview'|upper }}</h4>
+    {% if not last_result %}
+      <h4 class="result-title">{{ 'yesterday\'s diversity overview'|upper }}</h4>
+    {% else %}
+      <h4 class="result-title">{{ 'Diversity overview for '|upper }}{{ entry_date }}</h4>
+    {% endif %}
     <span><b>Ammount of programmes:</b> {{ programms_amount }}</span>
     <span><b>Total length:</b> {{ total_length }}</span>
     <div class="row charts-imgs text-center">
@@ -29,7 +33,7 @@
   <div class="row justify-content-between status-subscripton-block">
     <div class="general-status col-lg-5">
       <h4 class="status-title">{{ 'status'|upper }}</h4>
-      <p class="status-info">{{ programms_amount }} programmes went through diversity analysis yesterday.</p>
+      <p class="status-info">{{ programms_amount }} programmes went through diversity analysis {% if not last_result %}yesterday{% else %}{{ entry_date }}{% endif %}.</p>
     </div>
     <div class="general-subscription col-lg-5">
       <div class="sub-info text-center">{{ total_hours }} hours per month</div>

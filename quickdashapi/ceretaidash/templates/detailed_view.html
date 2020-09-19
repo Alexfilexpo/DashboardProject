@@ -21,54 +21,60 @@
                 </div>
             </form>
         </div>
-        <div class="prog_info row">
-            <span><b>Ammount of programmes:</b> {{ programms_amount }}</span>
-            <span><b>Total length:</b> {{ total_length }}</span>
-        </div>
-        <div class="representation-wrapper">
-            <h4 class="repr-title">Representation</h4>
-        </div>
-        <hr>
-        <div class="detailed-results">
-            <div class="title-wrapper">
-                <p class="detailed-title">Gender</p>
+        {% if not programms_amount %}
+            <div class="no-results col-lg-12 text-center">
+                <h1>No results for this time period</h1>
             </div>
-            <div class="row charts-imgs text-center">
-                <div class="screen-presence col-lg-6">
-                    <h4>Screen presence</h4>
-                    <img class="screen-img" src="data:image/png;base64,{{ screen_chart }}" width="500px">
+        {% else %}
+            <div class="prog_info row">
+                <span><b>Ammount of programmes:</b> {{ programms_amount }}</span>
+                <span><b>Total length:</b> {{ total_length }}</span>
+            </div>
+            <div class="representation-wrapper">
+                <h4 class="repr-title">Representation</h4>
+            </div>
+            <hr>
+            <div class="detailed-results">
+                <div class="title-wrapper">
+                    <p class="detailed-title">Gender</p>
                 </div>
-                <div class="speaking-time col-lg-6">
-                    <h4>Speaking time</h4>
-                    <img class="speaking-img" src="data:image/png;base64,{{ speech_chart }}" width="500px">
+                <div class="row charts-imgs text-center">
+                    <div class="screen-presence col-lg-6">
+                        <h4>Screen presence</h4>
+                        <img class="screen-img" src="data:image/png;base64,{{ screen_chart }}" width="500px">
+                    </div>
+                    <div class="speaking-time col-lg-6">
+                        <h4>Speaking time</h4>
+                        <img class="speaking-img" src="data:image/png;base64,{{ speech_chart }}" width="500px">
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="detailed-results">
-            <div class="title-wrapper">
-                <p class="detailed-title">Age</p>
-            </div>
-            <div class="row charts-imgs text-center">
-                <div class="age-distribution col-lg-6">
-                    <h4>Age distribution</h4>
-                    <img class="age-distribution-img" src="data:image/png;base64,{{ bar_chart }}" width="500px">
+            <div class="detailed-results">
+                <div class="title-wrapper">
+                    <p class="detailed-title">Age</p>
                 </div>
-                <div class="speaking-time col-lg-6">
-                    <h4>Average age per gender</h4>
-                    <div class="row justify-content-around avg-ages">
-                        <div class="woman-age col-md-3">
-                            <p>Womens are</br>
-                            <span class="avg-f"><b>{{ woman_avg_age }}</b></span></br>
-                            y/o on average</p>
-                        </div>
-                        <div class="man-age col-md-3">
-                            <p>Men are</br>
-                            <span class="avg-m"><b>{{ man_avg_age }}</b></span></br>
-                            y/o on average</p>
+                <div class="row charts-imgs text-center">
+                    <div class="age-distribution col-lg-6">
+                        <h4>Age distribution</h4>
+                        <img class="age-distribution-img" src="data:image/png;base64,{{ bar_chart }}" width="500px">
+                    </div>
+                    <div class="speaking-time col-lg-6">
+                        <h4>Average age per gender</h4>
+                        <div class="row justify-content-around avg-ages">
+                            <div class="woman-age col-md-3">
+                                <p>Womens are</br>
+                                <span class="avg-f"><b>{{ woman_avg_age }}</b></span></br>
+                                y/o on average</p>
+                            </div>
+                            <div class="man-age col-md-3">
+                                <p>Men are</br>
+                                <span class="avg-m"><b>{{ man_avg_age }}</b></span></br>
+                                y/o on average</p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        {% endif %}
     </div>
 {% endblock %}

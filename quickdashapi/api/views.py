@@ -1,4 +1,3 @@
-import math
 from datetime import date, timedelta
 
 from rest_framework import status
@@ -116,15 +115,15 @@ class SpecificVideoView(APIView):
     Retrieve specific entry, speech, face, ages data
     """
 
-    def get(self, request, user, date_range=None, title=None) -> Response:
+    def get(self, request, user, date=None, title=None) -> Response:
         """Returns specified entry data with related models data
 
         Parameters
         ----------
         user : int
             Primary key (or user id)
-        date_range : str, optional
-            Date range in format "Y-m-d - Y-m-d". Will be splited to "from date" and "end date"
+        date : str, optional
+            Date range in format "Y-m-d" or "Y-m-d - Y-m-d". Will be splited to "from date" and "end date"
             (default is None)
         title : str, optional
             Video title
@@ -137,20 +136,32 @@ class SpecificVideoView(APIView):
 
         counter = 1
         response = {}
-        if not date_range:
-            entry_date = date.strftime(date.today()-timedelta(days=1), '%Y-%m-%d')
+        entries = []
+        last = False
+
+        try:
+            last = request.GET['last']
+        except KeyError:
+            pass
+
+        if last:
+            entries.append(Entries.objects.filter(user_id=user).order_by('-entry_date').first())
         else:
-            entry_date = date_range.split(' - ') if ' - ' in date_range else date_range
-        if date_range and title:
-            if isinstance(entry_date, str):
-                entries = Entries.objects.filter(user_id=user, entry_date=entry_date, title=title)
+            if not date:
+                entry_date = date.strftime(date.today()-timedelta(days=1), '%Y-%m-%d')
             else:
-                entries = Entries.objects.filter(user_id=user, entry_date__range=entry_date, title=title)
-        elif date_range:
-            if isinstance(entry_date, str):
-                entries = Entries.objects.filter(user_id=user, entry_date=entry_date)
-            else:
-                entries = Entries.objects.filter(user_id=user, entry_date__range=entry_date)
+                entry_date = date.split(' - ') if ' - ' in date else date
+            if date:
+                if title:
+                    if isinstance(entry_date, str):
+                        entries = Entries.objects.filter(user_id=user, entry_date=entry_date, title=title)
+                    else:
+                        entries = Entries.objects.filter(user_id=user, entry_date__range=entry_date, title=title)
+                else:
+                    if isinstance(entry_date, str):
+                        entries = Entries.objects.filter(user_id=user, entry_date=entry_date)
+                    else:
+                        entries = Entries.objects.filter(user_id=user, entry_date__range=entry_date)
         for entry in entries:
             speech_time = entry.speechtimeline_set.get()
             face_data = entry.face_set.get()
